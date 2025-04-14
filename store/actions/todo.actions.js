@@ -1,4 +1,6 @@
 import { todoService } from '../../services/todo.service.js'
+import { store } from '../store.js'
+
 import {
   ADD_TODO,
   REMOVE_TODO,
@@ -6,12 +8,14 @@ import {
   SET_IS_LOADING,
   SET_MAX_PAGE,
   SET_TODOS,
+  UNDO_TODOS,
   UPDATE_TODO,
-  store,
-} from '../store.js'
+} from '../reducers/todo.reducer.js'
+
 import { addActivity } from './user.actions.js'
 
-export function loadTodos(filterBy) {
+export function loadTodos() {
+  const filterBy = store.getState().todoModule.filterBy
   store.dispatch({ type: SET_IS_LOADING, isLoading: true })
   return todoService
     .query(filterBy)
@@ -64,6 +68,24 @@ export function removeTodo(todoId) {
       throw err
     })
 }
+
+//OPTIMISTIC
+// export function removeTodoOpt(todoId) {
+//   store.dispatch({ type: REMOVE_TODO, todoId })
+//   return todoService
+//     .remove(todoId)
+//     .then(({ maxPage, doneTodosPercent }) => {
+//       _setTodosData(maxPage, doneTodosPercent)
+//     })
+//     .then(() => {
+//       return addActivity(`Removed` + ' A Todo' + todoId)
+//     })
+//     .catch(err => {
+//       console.log('todo action -> Cannot remove todo', err)
+//       store.dispatch({type:UNDO_TODOS}) ---------->>
+//       throw err
+//     })
+// }
 
 function _setTodosData(maxPage, doneTodosPercent) {
   store.dispatch({

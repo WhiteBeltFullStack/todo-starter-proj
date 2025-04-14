@@ -12,9 +12,9 @@ const { useSelector } = ReactRedux
 export function AppHeader() {
   const navigate = useNavigate()
   //   const [user, setUser] = useState(userService.getLoggedinUser())
-  const todos = useSelector(storeState => storeState.todos)
-  const user = useSelector(storeState => storeState.loggedInUser)
-  const doneTodoPercent = useSelector(storeState => storeState.doneTodosPercent)
+  const todos = useSelector(storeState => storeState.todoModule.todos)
+  const user = useSelector(storeState => storeState.userModule.loggedInUser)
+  const doneTodoPercent = useSelector(storeState => storeState.todoModule.doneTodosPercent)
 
   function onLogout() {
     logout()

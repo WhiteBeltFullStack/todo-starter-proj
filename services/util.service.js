@@ -5,7 +5,8 @@ export const utilService = {
     loadFromStorage,
     saveToStorage,
     animateCSS,
-    getFormattedTime
+    getFormattedTime,
+    debounce
 }
 
 function makeId(length = 6) {
@@ -68,4 +69,14 @@ function getFormattedTime(at) {
     else if (minutes < 60 * 2) return 'About an hour ago'
     else if (minutes < 60 * 24) return 'Several hours ago'
     return 'A day or more ago'
+}
+
+function debounce(func, timeout = 300) {
+    let timer
+    return (...args) => {
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+            func.apply(this, args)
+        }, timeout)
+    }
 }

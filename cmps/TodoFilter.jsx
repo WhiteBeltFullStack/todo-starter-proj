@@ -1,11 +1,15 @@
 const { useState, useEffect } = React
 
-export function TodoFilter({ filterBy, onSetFilterBy }) {
+import { utilService } from '../services/util.service.js'
+const { useRef } = React
+
+export function TodoFilter({ filterBy, onSetFilter }) {
   const [filterByToEdit, setFilterByToEdit] = useState({ ...filterBy })
+  onSetFilter = useRef(utilService.debounce(onSetFilter)).current
 
   useEffect(() => {
     // Notify parent
-    onSetFilterBy(filterByToEdit)
+    onSetFilter(filterByToEdit)
   }, [filterByToEdit])
 
   function handleChange({ target }) {
@@ -32,7 +36,7 @@ export function TodoFilter({ filterBy, onSetFilterBy }) {
   // Optional support for LAZY Filtering with a button
   function onSubmitFilter(ev) {
     ev.preventDefault()
-    onSetFilterBy(filterByToEdit)
+    onSetFilter(filterByToEdit)
   }
 
   const { txt, importance, status } = filterByToEdit
