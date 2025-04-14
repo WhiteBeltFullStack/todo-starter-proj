@@ -9,10 +9,21 @@ export const UPDATE_TODO = 'UPDATE_TODO'
 export const SET_USER = 'SET_USER'
 export const SET_USER_BALANCE = 'SET_USER_BALANCE'
 
+//LOADER
+export const SET_IS_LOADING = 'SET_IS_LOADING'
+
+//PERCENT
+export const SET_DONE_TODOS_PERCENT = 'SET_DONE_TODOS_PERCENT'
+
+//MAXPAGE
+export const SET_MAX_PAGE = 'SET_MAX_PAGE'
+
 const initialState = {
   loggedInUser: userService.getLoggedinUser(),
   todos: [],
   isLoading: false,
+  doneTodosPercent: 0,
+  maxPage: 0,
 }
 
 function appReducer(state = initialState, cmd = {}) {
@@ -54,6 +65,20 @@ function appReducer(state = initialState, cmd = {}) {
         ...state,
         loggedInUser,
       }
+
+    case SET_IS_LOADING:
+      return {
+        ...state,
+        isLoading: cmd.isLoading,
+      }
+    case SET_DONE_TODOS_PERCENT:
+      return {
+        ...state,
+        doneTodosPercent: cmd.doneTodosPercent,
+      }
+
+    case SET_MAX_PAGE:
+      return { ...state, maxPage: cmd.maxPage }
   }
 
   return state

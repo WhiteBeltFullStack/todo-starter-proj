@@ -1,34 +1,49 @@
 .app-header {
-    background-color: var(--clr1);
-    color: var(--clr2bg-light);
-    
+  background-color: var(--clr1);
+  color: var(--clr2bg-light);
 }
 
 .header-container {
-    display: flex;
-    align-items: center;
-
+  display: flex;
+  align-items: center;
+  padding: 5px;
 }
 
 .header-container h1 {
-    flex-grow: 1;
+  /* flex-grow: 1; */
+  margin-inline-end: auto;
 }
 
 .app-nav {
-    display: flex;
-    gap: 15px;
+  display: flex;
+  gap: 15px;
 }
-
 
 a.active {
-    color: rgb(241, 212, 241);
-    font-weight: 600;
-    text-decoration: underline;
+  color: rgb(241, 212, 241);
+  font-weight: 600;
+  text-decoration: underline;
 }
 
+.progress-bar {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+
+  width: 300px;
+  height: 40px;
+  background-color: rgb(138, 127, 127);
+
+  margin-inline-end: 300px;
+}
+
+.progress-bar span {
+  color: white;
+  align-self: center;
+}
 
 @media (max-width: 720px) {
-    .app-header {
-        color: var(--clr2bg-light);
-    }
+  .app-header {
+    color: var(--clr2bg-light);
+  }
 }

@@ -10,6 +10,9 @@
     text-transform: capitalize;
     color: black;
 }
+.todo-preview h2 {
+  cursor: pointer;
+}
 
 .todo-preview img {
     max-width: 100px;

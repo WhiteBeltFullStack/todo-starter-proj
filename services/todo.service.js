@@ -2,6 +2,7 @@ import { utilService } from './util.service.js'
 import { storageService } from './async-storage.service.js'
 
 const TODO_KEY = 'todoDB'
+const PAGE_SIZE = 3
 _createTodos()
 
 export const todoService = {
@@ -34,8 +35,45 @@ function query(filterBy = {}) {
       todos = todos.filter(todo => !todo.isDone)
     }
 
-    return todos
+    const filteredTodosLength = todos.length
+
+    if (filterBy.pageIdx !== undefined) {
+      const startIdx = filterBy.pageIdx * PAGE_SIZE
+      const endIdx = startIdx + PAGE_SIZE
+      todos = todos.slice(startIdx, endIdx)
+    }
+
+    return dataFromServer({ todos, filteredTodosLength })
   })
+}
+
+function dataFromServer(data = {}) {
+  const filteredTodosLength = data.filteredTodosLength
+  return Promise.all([getDoneTodosPercentage(), getMaxPage(filteredTodosLength)]).then(
+    ([doneTodosPercent, maxPage]) => {
+      console.log('doneTodosPercent:',doneTodosPercent)
+      return { maxPage, doneTodosPercent, ...data } // THIS IS WHAT YOU RECIEVE FROM IN THE END IN QUERY
+    }
+  )
+}
+
+function getDoneTodosPercentage() {
+  return storageService.query(TODO_KEY).then(todos => {
+    const doneTodosCount = todos.reduce((acc, todo) => acc + todo.isDone, 0) // When isDone is true it acts like 1
+    const percantage = (doneTodosCount / todos.length) * 100 || 0
+    return percantage
+  })
+}
+
+function getMaxPage(filteredTodosLength) {
+  if (filteredTodosLength) return Promise.resolve(Math.ceil(filteredTodosLength / PAGE_SIZE))
+  return storageService
+    .query(TODO_KEY)
+    .then(todos => Math.ceil(todos.length / PAGE_SIZE))
+    .catch(err => {
+      console.log('Cannot get max page:', err)
+      throw err
+    })
 }
 
 function get(todoId) {
@@ -46,18 +84,23 @@ function get(todoId) {
 }
 
 function remove(todoId) {
-  return storageService.remove(TODO_KEY, todoId)
+  return storageService
+    .remove(TODO_KEY, todoId)
+    .then(() => dataFromServer())
+    .catch(err => {
+      console.log('Cannot Remove todo:', err)
+      throw err
+    })
 }
 
 function save(todo) {
   if (todo._id) {
     // TODO - updatable fields
     todo.updatedAt = Date.now()
-    return storageService.put(TODO_KEY, todo)
+    return storageService.put(TODO_KEY, todo).then(savedTodo => dataFromServer({ savedTodo }))
   } else {
     todo.createdAt = todo.updatedAt = Date.now()
-
-    return storageService.post(TODO_KEY, todo)
+    return storageService.post(TODO_KEY, todo).then(savedTodo => dataFromServer({ savedTodo }))
   }
 }
 

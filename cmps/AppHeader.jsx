@@ -12,7 +12,9 @@ const { useSelector } = ReactRedux
 export function AppHeader() {
   const navigate = useNavigate()
   //   const [user, setUser] = useState(userService.getLoggedinUser())
+  const todos = useSelector(storeState => storeState.todos)
   const user = useSelector(storeState => storeState.loggedInUser)
+  const doneTodoPercent = useSelector(storeState => storeState.doneTodosPercent)
 
   function onLogout() {
     logout()
@@ -24,17 +26,39 @@ export function AppHeader() {
       })
   }
 
+  function getStylePrefs() {
+    const prefs = {
+      color: '',
+      backgroundColor: '',
+    }
+    if (user && user.pref) {
+      prefs.color = user.pref.color, 
+      prefs.backgroundColor = user.pref.bgColor
+    }
+    return prefs
+  }
+
   //   function onSetUser(user) {
   //     setUser(user)
   //     navigate('/')
   //   }
+  const formatedPercent = todos ? doneTodoPercent.toFixed(2) + '%' : null
+
   return (
-    <header className="app-header full main-layout">
+    <header style={getStylePrefs()} className="app-header full main-layout">
       <section className="header-container">
         <h1>React Todo App</h1>
+        {!user ? (
+          <span className="log-progress">Log in to see the progress</span>
+        ) : (
+          <section className="progress-bar">
+            <span>Done : {formatedPercent} </span>
+          </section>
+        )}
         {user ? (
           <section>
-            <Link to={`/user/${user._id}`}>Hello {user.fullname}</Link>
+            <span>Balance :{user.balance} </span>
+            <Link to={`/user`}>Hello {user.fullname}</Link>
             <button onClick={onLogout}>Logout</button>
           </section>
         ) : (

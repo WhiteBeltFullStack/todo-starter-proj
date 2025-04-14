@@ -4,6 +4,7 @@ import { DataTable } from '../cmps/data-table/DataTable.jsx'
 import { todoService } from '../services/todo.service.js'
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 import { loadTodos, removeTodo, saveTodo } from '../store/actions/todo.actions.js'
+import { changeBalance } from '../store/actions/user.actions.js'
 
 const { useState, useEffect } = React
 const { Link, useSearchParams } = ReactRouterDOM
@@ -12,6 +13,7 @@ const { useSelector, useDispatch } = ReactRedux
 export function TodoIndex() {
   //   const [todos, setTodos] = useState(null) FROM THIS
   const todos = useSelector(storeState => storeState.todos) // TO THIS
+  const isLoading = useSelector(storeState => storeState.isLoading)
   const dispatch = useDispatch()
 
   // Special hook for accessing search-params:
@@ -40,16 +42,18 @@ export function TodoIndex() {
   function onToggleTodo(todo) {
     const todoToSave = { ...todo, isDone: !todo.isDone }
     saveTodo(todoToSave)
-      .then(savedTodo => {
-        showSuccessMsg(`Todo is ${savedTodo.isDone ? 'done' : 'back on your list'}`)
+      .then(() => {
+        showSuccessMsg(`Updated successfully`)
+        if (todoToSave.isDone) {
+            return changeBalance(10)
+        }
       })
       .catch(err => {
         console.log('err:', err)
-        showErrorMsg('Cannot toggle todo ' + todoToSave._id)
+        showErrorMsg('Couldnt Update todo')
       })
   }
 
-  if (!todos) return <div>Loading...</div>
   return (
     <section className="todo-index">
       <TodoFilter filterBy={filterBy} onSetFilterBy={setFilterBy} />
@@ -59,12 +63,18 @@ export function TodoIndex() {
         </Link>
       </div>
       <h2>Todos List</h2>
-      <TodoList todos={todos} onRemoveTodo={onRemoveTodo} onToggleTodo={onToggleTodo} />
-      <hr />
-      <h2>Todos Table</h2>
-      <div style={{ width: '60%', margin: 'auto' }}>
-        <DataTable todos={todos} onRemoveTodo={onRemoveTodo} />
-      </div>
+      {isLoading ? (
+        <h1 className="loader">Loading ...</h1>
+      ) : (
+        <section>
+          <TodoList todos={todos} onRemoveTodo={onRemoveTodo} onToggleTodo={onToggleTodo} />
+          <hr />
+          <h2>Todos Table</h2>
+          <div style={{ width: '60%', margin: 'auto' }}>
+            <DataTable todos={todos} onRemoveTodo={onRemoveTodo} />
+          </div>
+        </section>
+      )}
     </section>
   )
 }

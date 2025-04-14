@@ -4,7 +4,8 @@ export const utilService = {
     getRandomIntInclusive,
     loadFromStorage,
     saveToStorage,
-    animateCSS
+    animateCSS,
+    getFormattedTime
 }
 
 function makeId(length = 6) {
@@ -57,4 +58,14 @@ function animateCSS(el, animation='bounce') {
 
         el.addEventListener('animationend', handleAnimationEnd, { once: true })
     })
+}
+
+
+function getFormattedTime(at) {
+    const timeDiff = Date.now() - at
+    const minutes = +(timeDiff / (1000 * 60)).toFixed(0)
+    if (minutes < 60) return minutes + ' minutes ago'
+    else if (minutes < 60 * 2) return 'About an hour ago'
+    else if (minutes < 60 * 24) return 'Several hours ago'
+    return 'A day or more ago'
 }
